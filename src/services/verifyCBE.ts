@@ -83,7 +83,17 @@ export async function verifyCBELegacy(
         logger.info('✅ Direct fetch success, parsing PDF');
         return await parseCBEReceipt(response.data);
     } catch (directErr: any) {
-        logger.warn('⚠️ Direct fetch failed, falling back to Puppeteer:', directErr.message);
+        logger.warn('⚠️ Direct fetch failed:', directErr.message);
+        
+        // Check if Puppeteer is disabled (e.g., on restricted hosting)
+        const skipPuppeteer = process.env.SKIP_CBE_PUPPETEER === 'true';
+        if (skipPuppeteer) {
+            logger.warn('⚠️ Puppeteer disabled (SKIP_CBE_PUPPETEER=true), direct fetch only');
+            return {
+                success: false,
+                error: 'Direct PDF fetch failed. Legacy CBE verification requires direct server access.'
+            };
+        }
 
         let browser;
         try {
