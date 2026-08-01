@@ -15,6 +15,7 @@ export interface VerifyResult {
     reference?: string;
     reason?: string | null;
     error?: string;
+    statusCode?: number;
 }
 
 function titleCase(str: string): string {
@@ -87,7 +88,7 @@ export async function verifyCBELegacy(
         let browser;
         try {
             browser = await puppeteer.launch({
-                headless: 'new',
+                headless: 'new' as any,
                 args: [
                     '--no-sandbox',
                     '--disable-setuid-sandbox',
